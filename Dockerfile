@@ -9,10 +9,12 @@ RUN git clone https://github.com/neilpa/yajsv.git && \
     cd yajsv && \
     git checkout 9889895863c595d38aa5d6347dfadb99f2687a51^{commit}
 
-RUN cd /go/yajsv && go build -o /yajsv
+# use turn off cgo to build a static binary
+ENV CGO_ENABLED=0
+RUN cd yajsv && go build -o /yajsv.bin
 
 FROM alpine:3.18.4 as runtime
 
-COPY --from=build  /yajsv /yajsv
+COPY --from=build  /yajsv.bin /yajsv
 
 ENTRYPOINT ["/yajsv"]
